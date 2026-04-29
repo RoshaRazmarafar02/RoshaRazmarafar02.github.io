@@ -57,19 +57,6 @@
         Result: '1st place · 2024 · National',
       },
     },
-    {
-      title: 'Project placeholder',
-      year: '—',
-      tags: ['To add'],
-      summary: [
-        'Reserved slot — a new project entry will live here. The dropdown structure is ready; content will be filled in later.',
-      ],
-      meta: {
-        Role: '—',
-        Stack: '—',
-        Status: 'To be added',
-      },
-    },
   ];
 
   function renderProjects(container) {
