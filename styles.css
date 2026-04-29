@@ -785,6 +785,33 @@ html { background: var(--bg); }
   text-transform: uppercase;
 }
 .research-side .label { color: var(--ink); text-transform: none; font-size: 12px; letter-spacing: 0.02em; font-family: var(--display); }
+.abstract-wrap { margin-top: 16px; }
+.abstract-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.abstract-toggle:hover { background: rgba(255,255,255,0.04); }
+.abstract-toggle-icon { transition: transform .3s; flex-shrink: 0; }
+.abstract-wrap.open .abstract-toggle-icon { transform: rotate(45deg); }
+.abstract-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .35s ease;
+}
+.abstract-wrap.open .abstract-body { grid-template-rows: 1fr; }
+.abstract-body > * { overflow: hidden; }
+.abstract-body p { margin-top: 16px; }
 
 /* ======== Education ======== */
 .edu-wrap {
