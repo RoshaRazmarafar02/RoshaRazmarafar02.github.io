@@ -799,18 +799,17 @@ html { background: var(--bg); }
   text-transform: uppercase;
   padding: 6px 12px;
   cursor: pointer;
-  transition: background .2s, color .2s;
+  transition: background .2s;
 }
 .abstract-toggle:hover { background: rgba(255,255,255,0.04); }
 .abstract-toggle-icon { transition: transform .3s; flex-shrink: 0; }
 .abstract-wrap.open .abstract-toggle-icon { transform: rotate(45deg); }
 .abstract-body {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows .35s ease;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease;
 }
-.abstract-wrap.open .abstract-body { grid-template-rows: 1fr; }
-.abstract-body > * { overflow: hidden; }
+.abstract-wrap.open .abstract-body { max-height: 800px; }
 .abstract-body p { margin-top: 16px; }
 
 /* ======== Education ======== */

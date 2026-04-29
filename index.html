@@ -222,12 +222,12 @@
                 <span class="abstract-toggle-label">Abstract</span>
                 <svg class="abstract-toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2 V10 M2 6 H10" stroke="currentColor" stroke-width="1.2"/></svg>
               </button>
-              <div class="abstract-body"><div>
+              <div class="abstract-body">
                 <p>Steering active stochastic systems toward prescribed terminal states is a central challenge at the intersection of statistical physics, stochastic control, and machine learning. Active matter systems exhibit persistent, non-equilibrium dynamics that make the position evolution effectively non-Markovian — unlike passive Brownian particles, active particles carry internal velocity state that evolves on its own dynamics, requiring control frameworks that explicitly represent the active process rather than approximating it as a small deviation from Brownian motion.</p>
                 <p>We develop a score-based control framework for the Active Ornstein&ndash;Uhlenbeck Process (AOUP), introducing a controlled formulation (C-AOUP) that models the system jointly in position and active velocity. Control is applied through the position dynamics as a Doob <em>h</em>-transform, yielding a time-dependent guidance score that steers particle trajectories toward a prescribed soft terminal target while leaving the active velocity dynamics unchanged — establishing a direct connection between stochastic optimal control and score-based learning.</p>
                 <p>In the linear-Gaussian regime the guidance score admits a closed-form expression with a time-varying linear feedback structure in position, active velocity, and target — fundamentally richer than the passive case, where no active velocity channel exists. This analytic form serves as a supervision signal for a time-conditioned neural network whose parameterization is aligned with the feedback structure, capturing the underlying control law while remaining flexible for settings beyond analytical tractability.</p>
                 <p>C-AOUP unifies stochastic optimal control, active matter physics, and score-based modeling, with applications in active micromachine design and trajectory-conditioned modeling of complex non-equilibrium systems.</p>
-              </div></div>
+              </div>
             </div>
           </div>
           <div class="research-side">
