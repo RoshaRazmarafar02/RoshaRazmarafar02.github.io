@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rosha Razmarafar — Computer Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20" />
+</head>
+<body>
+<div class="shell">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="2.2" fill="#c87345"/>
+          <circle cx="4" cy="6" r="1.4" fill="#d8dce0"/>
+          <circle cx="20" cy="6" r="1.4" fill="#d8dce0"/>
+          <circle cx="4" cy="18" r="1.4" fill="#d8dce0"/>
+          <circle cx="20" cy="18" r="1.4" fill="#d8dce0"/>
+          <path d="M4 6 L12 12 L20 6 M4 18 L12 12 L20 18" stroke="#d8dce0" stroke-opacity=".4" stroke-width=".8"/>
+        </svg>
+      </span>
+      <span>R. Razmarafar</span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <a class="nav-link active" data-route="home" href="#home"><span class="num">01</span>Index</a>
+      <a class="nav-link" data-route="projects" href="#projects"><span class="num">02</span>Projects</a>
+      <a class="nav-link" data-route="research" href="#research"><span class="num">03</span>Research</a>
+      <a class="nav-link" data-route="education" href="#education"><span class="num">04</span>Education</a>
+    </div>
+    <div class="nav-meta">
+      <span class="dot"></span>
+      <span>Istanbul · Ko&ccedil; CoSMaCS</span>
+    </div>
+  </nav>
+
+  <!-- ROUTER OUTLET -->
+  <main id="outlet"></main>
+
+</div>
+
+<!-- ========== TEMPLATES ========== -->
+
+<!-- HOME -->
+<template id="tpl-home">
+  <div class="page" data-page="home">
+    <section class="hero">
+      <canvas id="hero-canvas" class="hero-canvas"></canvas>
+      <div class="hero-content">
+        <div>
+          <h1>
+            <span class="name">Rosha Razmarafar</span>
+            <span class="h1-terminal">Computer Engineer_.</span>
+          </h1>
+          <p class="hero-sub">
+            <b>Machine learning</b> researcher working on <b>Generative Models</b> and <b>Reinforcement Learning</b>, with experience in data-driven modeling of complex dynamical systems. Currently a PhD candidate in Computational Science and Engineering at Ko&ccedil; University.
+          </p>
+          <div class="hero-eyebrow">23.07.2002 &middot; Istanbul, Turkey</div>
+          <dl class="hero-meta">
+            <div>
+              <dt>Focus</dt>
+              <dd>Machine Learning &middot; Generative &amp; Diffusion Models &middot; Complex Systems</dd>
+            </div>
+            <div>
+              <dt>Group</dt>
+              <dd>CoSMaCS — Ko&ccedil; Uni.</dd>
+            </div>
+            <div>
+              <dt>Based in</dt>
+              <dd>Istanbul, TR</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="hero-plate">
+          <div class="plate-card">
+            <span class="tick tl"></span><span class="tick tr"></span>
+            <span class="tick bl"></span><span class="tick br"></span>
+            <div class="plate-head">
+              <span>node://local</span>
+              <span class="plate-online">&middot; <span class="plate-cursor"></span>online</span>
+            </div>
+            <div class="plate-row"><span class="k">role</span><span class="v">Computer Engineer</span></div>
+            <div class="plate-row"><span class="k">program</span><span class="v">Direct PhD, CMSE</span></div>
+            <div class="plate-row"><span class="k">affiliation</span><span class="v accent">Ko&ccedil; University</span></div>
+            <div class="plate-row"><span class="k">langs</span><span class="v">py / c++ / c# / matlab / .etc</span></div>
+            <div class="plate-row"><span class="k">interests</span><span class="v">generative models &middot; representation learning &middot; optimization &middot; complex systems</span></div>
+            <div class="plate-row"><span class="k">status</span><span class="v accent">PhD Candidate</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-cue">
+        <span>scroll</span>
+        <span class="line"></span>
+      </div>
+    </section>
+
+    <!-- SKILL CLOUD -->
+    <section class="section">
+      <div class="bg-wash copper"></div>
+      <div class="section-label">
+        <span class="num">02 /</span>
+        <span>Technical Map</span>
+        <span class="line"></span>
+        <span>N=36</span>
+      </div>
+      <h2 class="section-title">A terrain, not a <span class="serif">list</span>.</h2>
+      <p class="section-desc">
+        The territory I work over — languages, substrates, ideas. Size and weight map to how central each is to my current practice. Typography switches between display, serif and monospace to separate tools, concepts and methods.
+      </p>
+      <div class="cloud-wrap">
+        <canvas id="cloud-flow-canvas" class="cloud-flow" aria-hidden="true"></canvas>
+        <div class="cloud" id="skill-cloud"></div>
+        <div class="cloud-legend">
+          <div>● display &middot; tools &amp; frameworks</div>
+          <div>● serif &middot; concepts &amp; ideas</div>
+          <div>● mono &middot; languages &amp; protocols</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick links -->
+    <section class="section" style="padding-top: 0;">
+      <div class="bg-wash mix"></div>
+      <div class="section-label">
+        <span class="num">03 /</span>
+        <span>Continue</span>
+        <span class="line"></span>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line);">
+        <a class="nav-card" href="#projects" data-route="projects">
+          <div class="nav-card-num">02</div>
+          <div class="nav-card-title">Projects</div>
+          <div class="nav-card-sub">Systems, simulations, research code.</div>
+          <div class="nav-card-arr">&rarr;</div>
+        </a>
+        <a class="nav-card" href="#research" data-route="research">
+          <div class="nav-card-num">03</div>
+          <div class="nav-card-title">Research</div>
+          <div class="nav-card-sub">Learning on stochastic processes.</div>
+          <div class="nav-card-arr">&rarr;</div>
+        </a>
+        <a class="nav-card" href="#education" data-route="education">
+          <div class="nav-card-num">04</div>
+          <div class="nav-card-title">Education</div>
+          <div class="nav-card-sub">Two degrees, one doctorate.</div>
+          <div class="nav-card-arr">&rarr;</div>
+        </a>
+      </div>
+    </section>
+    <!-- RL MICRO-LAB -->
+    <section class="section rl-section">
+      <div class="bg-wash teal"></div>
+
+      <div class="section-label">
+        <span class="num">04 /</span>
+        <span>Interactive</span>
+        <span class="line"></span>
+        <span>RL Micro-Lab</span>
+      </div>
+
+      <h2 class="section-title">A tiny agent that <span class="serif">learns</span> ;)</h2>
+
+      <p class="section-desc">
+        A minimal reinforcement learning environment where an agent learns a policy via Q-learning, balancing exploration and exploitation in a stochastic grid world.
+      </p>
+
+      <div id="rl-lab" class="rl-lab"></div>
+    </section>
+  </div>
+</template>
+
+<!-- PROJECTS -->
+<template id="tpl-projects">
+  <div class="page" data-page="projects">
+    <section class="section" style="padding-top: 160px;">
+      <div class="bg-wash copper"></div>
+      <div class="section-label">
+        <span class="num">02 /</span>
+        <span>Projects</span>
+        <span class="line"></span>
+        <span>N=4</span>
+      </div>
+      <h2 class="section-title">Things I've <span class="serif">built</span>.</h2>
+      <p class="section-desc">
+        A running index of engineered systems, research prototypes and side work. Open an entry to see stack, scope and notes. Content will grow over time.
+      </p>
+      <div class="proj-list" id="proj-list"></div>
+    </section>
+  </div>
+</template>
+
+<!-- RESEARCH -->
+<template id="tpl-research">
+  <div class="page" data-page="research">
+    <section class="section" style="padding-top: 160px;">
+      <div class="bg-wash teal"></div>
+      <div class="section-label">
+        <span class="num">03 /</span>
+        <span>Research</span>
+        <span class="line"></span>
+        <span>CoSMaCS</span>
+      </div>
+      <h2 class="section-title">Learning over <span class="serif">stochastic</span> systems.</h2>
+      <p class="section-desc">
+        I work on learning-based methods for modeling and controlling stochastic processes — bridging numerical simulation, neural approximation, and distributed-systems thinking. Below is the current state of my research agenda.
+      </p>
+
+      <div class="research-grid">
+        <div class="research-item">
+          <div class="research-date">In Preparation · 2026</div>
+          <div class="research-body">
+            <div class="kind">Manuscript</div>
+            <h3>Learning Conditional Score Fields for Stochastic Diffusion Processes</h3>
+            <p>Learning-based methods for modeling and controlling stochastic diffusion processes using neural score approximations. Applications to high-dimensional dynamical systems, trajectory generation and constrained sampling.</p>
+          </div>
+          <div class="research-side">
+            <div class="label">Ko&ccedil; University</div>
+            <div>CoSMaCS group</div>
+            <div>Advisor · L. Carenza</div>
+          </div>
+        </div>
+
+        <div class="research-item">
+          <div class="research-date">Ongoing · 2025–</div>
+          <div class="research-body">
+            <div class="kind">Research Interest</div>
+            <h3>Deep Learning in Stochastic &amp; Dynamical Systems</h3>
+            <p>Neural architectures for high-dimensional physical systems. Score-based and diffusion models as generative priors over trajectories. Interdisciplinary AI sitting between numerical analysis, statistical physics, and scalable training.</p>
+          </div>
+          <div class="research-side">
+            <div class="label">Active area</div>
+            <div>Stochastic processes</div>
+            <div>Generative modeling</div>
+          </div>
+        </div>
+
+        <div class="research-item">
+          <div class="research-date">Ongoing · 2025–</div>
+          <div class="research-body">
+            <div class="kind">Research Interest</div>
+            <h3>Reinforcement Learning for Emergent Systems</h3>
+            <p>RL for control and decision-making in complex, emergent physical systems. Interested in soft / active matter, multi-agent dynamics, and policies that remain stable under distributional drift.</p>
+          </div>
+          <div class="research-side">
+            <div class="label">Active area</div>
+            <div>Control · RL</div>
+            <div>Soft &amp; active matter</div>
+          </div>
+        </div>
+
+        <div class="research-item">
+          <div class="research-date">Recurring · 2025–</div>
+          <div class="research-body">
+            <div class="kind">Teaching</div>
+            <h3>Teaching Assistant — PHYS 102</h3>
+            <p>Problem-solving sessions for undergraduate physics at Ko&ccedil; University. Spring &amp; Fall 2025, Spring 2026. Threading computational perspectives into classical mechanics.</p>
+          </div>
+          <div class="research-side">
+            <div class="label">Ko&ccedil; University</div>
+            <div>3 terms</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<!-- EDUCATION -->
+<template id="tpl-education">
+  <div class="page" data-page="education">
+    <section class="section" style="padding-top: 160px;">
+      <div class="bg-wash mix"></div>
+      <div class="section-label">
+        <span class="num">04 /</span>
+        <span>Education</span>
+        <span class="line"></span>
+      </div>
+      <h2 class="section-title">A path through <span class="serif">computation</span>.</h2>
+      <p class="section-desc">
+        Two undergraduate degrees and one direct-PhD. The arc: from systems-level engineering, through numerical computing, into learning on complex systems.
+      </p>
+
+      <div class="edu-wrap">
+        <div class="edu-col">
+          <h3>Degrees</h3>
+
+          <div class="edu-entry">
+            <div class="edu-period">2025 — Present</div>
+            <div class="edu-degree">PhD, Computational Science &amp; Engineering</div>
+            <div class="edu-school">Ko&ccedil; University · Istanbul</div>
+            <div class="edu-note">Direct PhD &middot; CoSMaCS Research Group</div>
+          </div>
+
+          <div class="edu-entry">
+            <div class="edu-period">2020 — 2024</div>
+            <div class="edu-degree">B.Sc. Computer Engineering</div>
+            <div class="edu-school">Maltepe University · Istanbul</div>
+            <div class="edu-note">GPA 3.69 / 4.00</div>
+          </div>
+
+          <div class="edu-entry">
+            <div class="edu-period">2021 — 2024</div>
+            <div class="edu-degree">Assoc. Computer Programming <span style="color:var(--ink-faint); font-size: 14px; margin-left: 6px;">(double major)</span></div>
+            <div class="edu-school">Maltepe University · Istanbul</div>
+            <div class="edu-note">GPA 3.74 / 4.00</div>
+          </div>
+        </div>
+
+        <div class="edu-col">
+          <h3>Honors &amp; Awards</h3>
+          <div class="honors">
+            <div class="honor-row">
+              <div class="y">2021–24</div>
+              <div class="t">1st Rank, Faculty of Engineering<br><span style="color:var(--ink-faint); font-size:12px;">Maltepe University</span></div>
+              <div class="r">#1</div>
+            </div>
+            <div class="honor-row">
+              <div class="y">2024</div>
+              <div class="t">MathWorks Minidrone Competition<br><span style="color:var(--ink-faint); font-size:12px;">National</span></div>
+              <div class="r">1st</div>
+            </div>
+            <div class="honor-row">
+              <div class="y">2023</div>
+              <div class="t">MathWorks Minidrone Competition<br><span style="color:var(--ink-faint); font-size:12px;">National</span></div>
+              <div class="r">4th</div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 48px;">Languages</h3>
+          <div class="honors">
+            <div class="honor-row"><div class="y">Native</div><div class="t">Persian</div><div class="r"></div></div>
+            <div class="honor-row"><div class="y">Adv.</div><div class="t">English <span style="color:var(--ink-faint); font-size:12px;">&middot; TOEFL 101</span></div><div class="r"></div></div>
+            <div class="honor-row"><div class="y">Pro.</div><div class="t">Turkish</div><div class="r"></div></div>
+            <div class="honor-row"><div class="y">B–Int.</div><div class="t">German</div><div class="r"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div>
+    <div class="big">Let&rsquo;s build systems that <span style="font-family:var(--serif); font-style:italic; color:var(--rose);">think</span>.</div>
+    <div class="sig">Rosha Razmarafar &middot; &copy; 2026</div>
+  </div>
+  <div>
+    <h4>Contact</h4>
+    <a href="mailto:rosharazmarafar@gmail.com">rosharazmarafar@gmail.com</a>
+    <a href="https://github.com/RoshaRazmarafar02" target="_blank" rel="noopener">github.com/RoshaRazmarafar02</a>
+    <a href="https://linkedin.com/in/rosha-razmarafar" target="_blank" rel="noopener">linkedin.com/in/rosha-razmarafar</a>
+  </div>
+  <div>
+    <h4>Index</h4>
+    <a href="#home" data-route="home">Home</a>
+    <a href="#projects" data-route="projects">Projects</a>
+    <a href="#research" data-route="research">Research</a>
+    <a href="#education" data-route="education">Education</a>
+  </div>
+  <div>
+    <h4>Elsewhere</h4>
+    <a>Google Scholar — soon</a>
+    <a>ORCID — soon</a>
+  </div>
+</footer>
+
+<style>
+.nav-card {
+  padding: 48px 32px 36px;
+  background: var(--bg);
+  position: relative;
+  display: grid;
+  grid-template-areas: "num arr" "title arr" "sub arr";
+  grid-template-columns: 1fr auto;
+  gap: 8px 0;
+  transition: background .3s;
+  min-height: 220px;
+}
+.nav-card:hover { background: var(--bg-elev); }
+.nav-card-num { grid-area: num; font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--ink-faint); text-transform: uppercase; }
+.nav-card-title { grid-area: title; font-family: var(--display); font-weight: 300; font-size: 36px; letter-spacing: -0.02em; color: var(--ink); align-self: end; margin-top: 32px; }
+.nav-card-sub { grid-area: sub; font-family: var(--display); font-size: 13px; color: var(--ink-dim); margin-top: 6px; }
+.nav-card-arr { grid-area: arr; align-self: end; font-size: 24px; color: var(--teal); transition: transform .3s; }
+.nav-card:hover .nav-card-arr { transform: translateX(6px); }
+@media (max-width: 960px) {
+  #outlet .section > div[style*="grid-template-columns: repeat(3"] { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<script src="hero-anim.js?v=4"></script>
+<script src="skill-cloud.js?v=4"></script>
+<script src="cloud-flow.js?v=46"></script>
+<script src="landing-anim.js?v=1"></script>
+<script src="router.js?v=6"></script>
+<script src="cursor.js?v=6"></script>
+<script src="rl-lab.js?v=7"></script>
+</body>
+</html>
