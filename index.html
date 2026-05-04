@@ -127,43 +127,47 @@
         <span>Continue</span>
         <span class="line"></span>
       </div>
-      <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); align-items: stretch;">
-        <a class="nav-card" style="grid-column: span 2;" href="#projects" data-route="projects">
-          <div class="nav-card-num">02</div>
-          <div class="nav-card-title">Projects</div>
-          <div class="nav-card-sub">Systems, simulations, research code.</div>
-          <div class="nav-card-arr">&rarr;</div>
-        </a>
-        <a class="nav-card" style="grid-column: span 2;" href="#research" data-route="research">
-          <div class="nav-card-num">03</div>
-          <div class="nav-card-title">Research</div>
-          <div class="nav-card-sub">Learning on stochastic processes.</div>
-          <div class="nav-card-arr">&rarr;</div>
-        </a>
-        <a class="nav-card" style="grid-column: span 2;" href="#education" data-route="education">
-          <div class="nav-card-num">04</div>
-          <div class="nav-card-title">Education</div>
-          <div class="nav-card-sub">Doubled up undergrad, skipped straight to PhD.</div>
-          <div class="nav-card-arr">&rarr;</div>
-        </a>
-        <div class="nav-card" style="grid-column: span 3;">
-          <div class="nav-card-num">05</div>
-          <div class="nav-card-title">Contact</div>
-          <div class="nav-card-contact">
-            <span class="nav-card-contact-label">email</span>
-            <span class="nav-card-contact-label">linkedin</span>
-            <span class="nav-card-contact-label">github</span>
-            <a class="nav-card-contact-value" href="mailto:rosharazmarafar@gmail.com">rosharazmarafar@gmail.com</a>
-            <a class="nav-card-contact-value" href="https://linkedin.com/in/rosha-razmarafar" target="_blank" rel="noopener">rosha-razmarafar</a>
-            <a class="nav-card-contact-value" href="https://github.com/RoshaRazmarafar02" target="_blank" rel="noopener">RoshaRazmarafar02</a>
-          </div>
+      <div style="display:grid; gap: 1px; background: var(--line); border: 1px solid var(--line);">
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line);">
+          <a class="nav-card" href="#projects" data-route="projects">
+            <div class="nav-card-num">02</div>
+            <div class="nav-card-title">Projects</div>
+            <div class="nav-card-sub">Systems, simulations, research code.</div>
+            <div class="nav-card-arr">&rarr;</div>
+          </a>
+          <a class="nav-card" href="#research" data-route="research">
+            <div class="nav-card-num">03</div>
+            <div class="nav-card-title">Research</div>
+            <div class="nav-card-sub">Learning on stochastic processes.</div>
+            <div class="nav-card-arr">&rarr;</div>
+          </a>
+          <a class="nav-card" href="#education" data-route="education">
+            <div class="nav-card-num">04</div>
+            <div class="nav-card-title">Education</div>
+            <div class="nav-card-sub">Doubled up undergrad, skipped straight to PhD.</div>
+            <div class="nav-card-arr">&rarr;</div>
+          </a>
         </div>
-        <a class="nav-card" style="grid-column: span 3;" href="assets/CV.pdf" target="_blank" rel="noopener">
-          <div class="nav-card-num">06</div>
-          <div class="nav-card-title nav-card-title--cv">CV</div>
-          <div class="nav-card-sub">Full résumé, PDF.</div>
-          <div class="nav-card-arr">&darr;</div>
-        </a>
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line);">
+          <div class="nav-card">
+            <div class="nav-card-num">05</div>
+            <div class="nav-card-title">Contact</div>
+            <div class="nav-card-contact">
+              <span class="nav-card-contact-label">email</span>
+              <span class="nav-card-contact-label">linkedin</span>
+              <span class="nav-card-contact-label">github</span>
+              <a class="nav-card-contact-value" href="mailto:rosharazmarafar@gmail.com">rosharazmarafar@gmail.com</a>
+              <a class="nav-card-contact-value" href="https://linkedin.com/in/rosha-razmarafar" target="_blank" rel="noopener">rosha-razmarafar</a>
+              <a class="nav-card-contact-value" href="https://github.com/RoshaRazmarafar02" target="_blank" rel="noopener">RoshaRazmarafar02</a>
+            </div>
+          </div>
+          <a class="nav-card" href="assets/CV.pdf" target="_blank" rel="noopener">
+            <div class="nav-card-num">06</div>
+            <div class="nav-card-title nav-card-title--cv">CV</div>
+            <div class="nav-card-sub">Full résumé, PDF.</div>
+            <div class="nav-card-arr">&darr;</div>
+          </a>
+        </div>
       </div>
     </section>
     <!-- RL MICRO-LAB -->
@@ -413,7 +417,8 @@
 .nav-card-contact-value:hover { opacity: 0.7; }
 .nav-card-title--cv { color: var(--magenta); text-shadow: 0 0 18px var(--magenta), 0 0 40px color-mix(in srgb, var(--magenta) 40%, transparent); }
 @media (max-width: 960px) {
-  #outlet .section > div[style*="grid-template-columns: repeat(6"] { grid-template-columns: 1fr !important; }
+  #outlet .section > div > div[style*="grid-template-columns: repeat(3"] { grid-template-columns: 1fr !important; }
+  #outlet .section > div > div[style*="grid-template-columns: repeat(2"] { grid-template-columns: 1fr !important; }
 }
 </style>
 
