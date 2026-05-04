@@ -311,6 +311,8 @@ html { background: var(--bg); }
   margin-bottom: 48px;
 }
 
+.teal { color: var(--teal); }
+
 .hero-meta {
   display: grid;
   grid-template-columns: 1fr;
