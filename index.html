@@ -146,12 +146,15 @@
           <div class="nav-card-sub">Doubled up undergrad, skipped straight to PhD.</div>
           <div class="nav-card-arr">&rarr;</div>
         </a>
-        <a class="nav-card" href="mailto:rosharazmarafar@gmail.com">
+        <div class="nav-card">
           <div class="nav-card-num">05</div>
           <div class="nav-card-title">Contact</div>
-          <div class="nav-card-sub">Drop a line.</div>
-          <div class="nav-card-arr">&rarr;</div>
-        </a>
+          <div class="nav-card-links">
+            <a href="mailto:rosharazmarafar@gmail.com">rosharazmarafar@gmail.com</a>
+            <a href="https://linkedin.com/in/rosha-razmarafar" target="_blank" rel="noopener">linkedin.com/in/rosha-razmarafar</a>
+            <a href="https://github.com/RoshaRazmarafar02" target="_blank" rel="noopener">github.com/RoshaRazmarafar02</a>
+          </div>
+        </div>
         <a class="nav-card" href="assets/CV.pdf" target="_blank" rel="noopener">
           <div class="nav-card-num">06</div>
           <div class="nav-card-title">CV</div>
@@ -401,8 +404,11 @@
 .nav-card-sub { grid-area: sub; font-family: var(--display); font-size: 13px; color: var(--ink-dim); margin-top: 6px; }
 .nav-card-arr { grid-area: arr; align-self: end; font-size: 24px; color: var(--teal); transition: transform .3s; }
 .nav-card:hover .nav-card-arr { transform: translateX(6px); }
+.nav-card-links { grid-area: sub; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.nav-card-links a { font-family: var(--mono); font-size: 11px; color: var(--teal); text-decoration: none; letter-spacing: 0.04em; transition: opacity .2s; }
+.nav-card-links a:hover { opacity: 0.7; }
 @media (max-width: 960px) {
-  #outlet .section > div[style*="grid-template-columns: repeat(3"] { grid-template-columns: 1fr !important; }
+  #outlet .section > div[style*="grid-template-columns: repeat(5"] { grid-template-columns: 1fr !important; }
 }
 </style>
 
