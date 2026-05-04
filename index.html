@@ -127,7 +127,7 @@
         <span>Continue</span>
         <span class="line"></span>
       </div>
-      <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line);">
+      <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); align-items: stretch;">
         <a class="nav-card" style="grid-column: span 2;" href="#projects" data-route="projects">
           <div class="nav-card-num">02</div>
           <div class="nav-card-title">Projects</div>
@@ -149,10 +149,13 @@
         <div class="nav-card" style="grid-column: span 3;">
           <div class="nav-card-num">05</div>
           <div class="nav-card-title">Contact</div>
-          <div class="nav-card-links">
-            <a href="mailto:rosharazmarafar@gmail.com">rosharazmarafar@gmail.com</a>
-            <a href="https://linkedin.com/in/rosha-razmarafar" target="_blank" rel="noopener">linkedin.com/in/rosha-razmarafar</a>
-            <a href="https://github.com/RoshaRazmarafar02" target="_blank" rel="noopener">github.com/RoshaRazmarafar02</a>
+          <div class="nav-card-contact">
+            <span class="nav-card-contact-label">email</span>
+            <span class="nav-card-contact-label">linkedin</span>
+            <span class="nav-card-contact-label">github</span>
+            <a class="nav-card-contact-value" href="mailto:rosharazmarafar@gmail.com">rosharazmarafar@gmail.com</a>
+            <a class="nav-card-contact-value" href="https://linkedin.com/in/rosha-razmarafar" target="_blank" rel="noopener">rosha-razmarafar</a>
+            <a class="nav-card-contact-value" href="https://github.com/RoshaRazmarafar02" target="_blank" rel="noopener">RoshaRazmarafar02</a>
           </div>
         </div>
         <a class="nav-card" style="grid-column: span 3;" href="assets/CV.pdf" target="_blank" rel="noopener">
@@ -404,9 +407,10 @@
 .nav-card-sub { grid-area: sub; font-family: var(--display); font-size: 13px; color: var(--ink-dim); margin-top: 6px; }
 .nav-card-arr { grid-area: arr; align-self: end; font-size: 24px; color: var(--teal); transition: transform .3s; }
 .nav-card:hover .nav-card-arr { transform: translateX(6px); }
-.nav-card-links { grid-area: sub; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-.nav-card-links a { font-family: var(--mono); font-size: 11px; color: var(--teal); text-decoration: none; letter-spacing: 0.04em; transition: opacity .2s; }
-.nav-card-links a:hover { opacity: 0.7; }
+.nav-card-contact { grid-area: sub; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 24px; margin-top: 10px; align-content: start; }
+.nav-card-contact-label { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.15em; }
+.nav-card-contact-value { font-family: var(--mono); font-size: 11px; color: var(--teal); text-decoration: none; letter-spacing: 0.03em; transition: opacity .2s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-card-contact-value:hover { opacity: 0.7; }
 .nav-card-title--cv { color: var(--magenta); text-shadow: 0 0 18px var(--magenta), 0 0 40px color-mix(in srgb, var(--magenta) 40%, transparent); }
 @media (max-width: 960px) {
   #outlet .section > div[style*="grid-template-columns: repeat(6"] { grid-template-columns: 1fr !important; }
