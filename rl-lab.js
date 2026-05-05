@@ -50,11 +50,15 @@
         </div>
         <div class="rl-stat">
             <span>policy</span>
-            <strong id="rl-policy">raw</strong>
+            <strong id="rl-policy">training</strong>
+        </div>
+        <div class="rl-stat">
+            <span>trained at</span>
+            <strong id="rl-trained-at">—</strong>
         </div>
         <div class="rl-note">
           Q-values are approximated by a small neural network (2→32→32→4) instead of a lookup table — same Bellman target, learned by gradient descent.
-          Press <b>Train</b> to run 25 episodes, <b>Run Policy</b> to watch the greedy policy, <b>One Step</b> to step manually, or <b>Reset</b> to start fresh.
+          Press <b>Train</b> to run until the greedy policy converges, <b>Run Policy</b> to watch the result, <b>One Step</b> to step manually, or <b>Reset</b> to start fresh.
         </div>
       </div>
     </div>
@@ -150,6 +154,10 @@
   let successes = 0;
   let episodeReward = 0;
   let winRewards = [];
+  let trainedAtEpisode = null;
+  let stableChecks = 0;
+  const REQUIRED_STABLE_CHECKS = 5;
+  const MAX_TRAIN_EPISODES = 400;
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -329,14 +337,37 @@
       resetCat();
     }
 
-    updateState();
-    if (shouldDraw) draw();
+    if (shouldDraw) {
+      updateState();
+      draw();
+    }
   }
 
-  function trainFast(episodesTarget = 25) {
+  function trainUntilConverged() {
     if (running) return;
-    const target = episode + episodesTarget;
-    while (episode < target) LearningStep(false);
+
+    const startEpisode = episode;
+    stableChecks = 0;
+    trainedAtEpisode = null;
+
+    while (episode - startEpisode < MAX_TRAIN_EPISODES) {
+      LearningStep(false);
+
+      // check only at episode boundaries (steps resets to 0 after each episode)
+      if (steps === 0 && episode > 0) {
+        if (policyReachesGoal()) {
+          stableChecks++;
+        } else {
+          stableChecks = 0;
+        }
+
+        if (stableChecks >= REQUIRED_STABLE_CHECKS) {
+          trainedAtEpisode = episode;
+          break;
+        }
+      }
+    }
+
     showPath = true;
     resetCat();
     updateState();
@@ -383,8 +414,9 @@
     document.getElementById("rl-steps").textContent      = steps.toString().padStart(2, "0");
     document.getElementById("rl-epsilon").textContent    = epsilon.toFixed(2);
     document.getElementById("rl-success").textContent    = `${successRate.toFixed(0)}%`;
-    document.getElementById("rl-avg-reward").textContent = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
-    document.getElementById("rl-policy").textContent     = successRate > 50 ? "learned" : "exploring";
+    document.getElementById("rl-avg-reward").textContent  = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
+    document.getElementById("rl-policy").textContent      = trainedAtEpisode ? "converged" : "training";
+    document.getElementById("rl-trained-at").textContent  = trainedAtEpisode ? `${trainedAtEpisode}` : "—";
   }
 
   function draw() {
@@ -573,7 +605,7 @@
   mount.querySelector('[data-action="train-fast"]').addEventListener("click", () => {
     clearInterval(timer);
     running = false;
-    trainFast(120);
+    trainUntilConverged();
   });
 
   mount.querySelector('[data-action="demo"]').addEventListener("click", () => {
@@ -590,13 +622,15 @@
     walls.length  = 0;
     randomizeCatMouse();
     randomizeWalls();
-    episode       = 0;
-    epsilon       = 0.4;
-    winFlash      = 0;
-    showPath      = false;
-    successes     = 0;
-    episodeReward = 0;
-    winRewards    = [];
+    episode          = 0;
+    epsilon          = 0.4;
+    winFlash         = 0;
+    showPath         = false;
+    successes        = 0;
+    episodeReward    = 0;
+    winRewards       = [];
+    trainedAtEpisode = null;
+    stableChecks     = 0;
     resetCat();
     updateState();
     draw();
