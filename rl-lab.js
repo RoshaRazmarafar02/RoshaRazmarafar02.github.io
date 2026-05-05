@@ -57,7 +57,7 @@
             <strong id="rl-trained-at">—</strong>
         </div>
         <div class="rl-note">
-          Q-values are approximated by a small neural network (2→32→32→4) instead of a lookup table — same Bellman target, learned by gradient descent.
+          Q-values are approximated by a small neural network (2→32→32→4) trained via gradient descent on the Bellman target. Starts with full exploration (ε=1) and dense distance shaping to overcome sparse rewards.
           Press <b>Train</b> to run until the greedy policy converges, <b>Run Policy</b> to watch the result, <b>One Step</b> to step manually, or <b>Reset</b> to start fresh.
         </div>
       </div>
@@ -145,7 +145,7 @@
 
   let episode  = 0;
   let steps    = 0;
-  let epsilon  = 0.4;
+  let epsilon  = 1.0;
   const gamma  = 0.9;
   let running  = false;
   let timer    = null;
@@ -315,11 +315,16 @@
     const cx = cat.x, cy = cat.y;
     visited.add(`${cx},${cy}`);
 
+    const prevDist    = Math.abs(cx - mouse.x) + Math.abs(cy - mouse.y);
     const actionIndex = chooseAction(cx, cy);
     const result      = takeAction(actionIndex, shouldDraw);
 
+    // Dense shaping bonus: reward moving toward mouse, penalize moving away
+    const currDist    = Math.abs(result.next.x - mouse.x) + Math.abs(result.next.y - mouse.y);
+    const reward      = result.reward + (result.done ? 0 : (prevDist - currDist) * 0.2);
+
     const nextQ  = nn.predict(stateVec(result.next.x, result.next.y));
-    const target = result.reward + (result.done ? 0 : gamma * Math.max(...nextQ));
+    const target = reward + (result.done ? 0 : gamma * Math.max(...nextQ));
     nn.train(stateVec(cx, cy), target, actionIndex);
 
     episodeReward += result.reward;
@@ -623,7 +628,7 @@
     randomizeCatMouse();
     randomizeWalls();
     episode          = 0;
-    epsilon          = 0.4;
+    epsilon          = 1.0;
     winFlash         = 0;
     showPath         = false;
     successes        = 0;
