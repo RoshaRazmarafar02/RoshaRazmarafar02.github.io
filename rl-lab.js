@@ -384,7 +384,7 @@
     document.getElementById("rl-epsilon").textContent    = epsilon.toFixed(2);
     document.getElementById("rl-success").textContent    = `${successRate.toFixed(0)}%`;
     document.getElementById("rl-avg-reward").textContent = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
-    document.getElementById("rl-policy").textContent     = (episode > 0 && policyReachesGoal()) ? "learned" : "exploring";
+    document.getElementById("rl-policy").textContent     = successRate > 50 ? "learned" : "exploring";
   }
 
   function draw() {
@@ -573,7 +573,7 @@
   mount.querySelector('[data-action="train-fast"]').addEventListener("click", () => {
     clearInterval(timer);
     running = false;
-    trainFast(25);
+    trainFast(120);
   });
 
   mount.querySelector('[data-action="demo"]').addEventListener("click", () => {
@@ -609,5 +609,9 @@
 
   // ── init ──────────────────────────────────────────────────────────────────
 
+  randomizeCatMouse();
+  randomizeWalls();
+  resetCat();
+  updateState();
   draw();
 })();
