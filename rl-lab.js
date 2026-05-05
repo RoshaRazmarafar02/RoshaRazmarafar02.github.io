@@ -158,11 +158,28 @@
   let stableChecks = 0;
   const REQUIRED_STABLE_CHECKS = 5;
   const MAX_TRAIN_EPISODES = 400;
+  let distMap = null;  // BFS distance from every cell to mouse, respecting walls
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
   function isWall(x, y)    { return walls.some(w => w.x === x && w.y === y); }
   function isOutside(x, y) { return x < 0 || x >= grid || y < 0 || y >= grid; }
+
+  function computeDistMap() {
+    distMap = Array.from({ length: grid }, () => Array(grid).fill(Infinity));
+    distMap[mouse.y][mouse.x] = 0;
+    const queue = [{ x: mouse.x, y: mouse.y }];
+    while (queue.length) {
+      const { x, y } = queue.shift();
+      for (const { dx, dy } of actions) {
+        const nx = x + dx, ny = y + dy;
+        if (!isOutside(nx, ny) && !isWall(nx, ny) && distMap[ny][nx] === Infinity) {
+          distMap[ny][nx] = distMap[y][x] + 1;
+          queue.push({ x: nx, y: ny });
+        }
+      }
+    }
+  }
 
   function hasPath(sx, sy, ex, ey) {
     const seen = new Set();
@@ -315,12 +332,12 @@
     const cx = cat.x, cy = cat.y;
     visited.add(`${cx},${cy}`);
 
-    const prevDist    = Math.abs(cx - mouse.x) + Math.abs(cy - mouse.y);
+    const prevDist    = distMap ? distMap[cy][cx] : Infinity;
     const actionIndex = chooseAction(cx, cy);
     const result      = takeAction(actionIndex, shouldDraw);
 
-    // Dense shaping bonus: reward moving toward mouse, penalize moving away
-    const currDist    = Math.abs(result.next.x - mouse.x) + Math.abs(result.next.y - mouse.y);
+    // Dense shaping: BFS distance respects walls, so detours are rewarded correctly
+    const currDist    = distMap ? distMap[result.next.y][result.next.x] : Infinity;
     const reward      = result.reward + (result.done ? 0 : (prevDist - currDist) * 0.2);
 
     const nextQ  = nn.predict(stateVec(result.next.x, result.next.y));
@@ -351,6 +368,7 @@
   function trainUntilConverged() {
     if (running) return;
 
+    computeDistMap();
     const startEpisode = episode;
     stableChecks = 0;
     trainedAtEpisode = null;
@@ -627,6 +645,7 @@
     walls.length  = 0;
     randomizeCatMouse();
     randomizeWalls();
+    computeDistMap();
     episode          = 0;
     epsilon          = 1.0;
     winFlash         = 0;
@@ -650,6 +669,7 @@
 
   randomizeCatMouse();
   randomizeWalls();
+  computeDistMap();
   resetCat();
   updateState();
   draw();
