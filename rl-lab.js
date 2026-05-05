@@ -57,8 +57,7 @@
             <strong id="rl-trained-at">—</strong>
         </div>
         <div class="rl-note">
-          Q-values are approximated by a small neural network (2→32→32→4) trained via gradient descent on the Bellman target. Starts with full exploration (ε=1) and dense distance shaping to overcome sparse rewards.
-          Press <b>Train</b> to run until the greedy policy converges, <b>Run Policy</b> to watch the result, <b>One Step</b> to step manually, or <b>Reset</b> to start fresh.
+          Starts at ε=1 (pure random), decays toward greedy as it learns. BFS-based reward shaping gives a dense signal each step so the network learns even before it finds the goal. <b>Train</b> runs episodes automatically and stops when the greedy policy reaches the mouse 5 times in a row — <i>trained at</i> shows which episode that happened. <b>Run Policy</b> replays the learned path. <b>Reset</b> randomizes the map and clears the network.
         </div>
       </div>
     </div>

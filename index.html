@@ -184,7 +184,7 @@
       <h2 class="section-title">A tiny agent that <span class="serif">learns</span> ;)</h2>
 
       <p class="section-desc">
-        A minimal reinforcement learning environment where an agent learns a policy via Q-learning, balancing exploration and exploitation in a stochastic grid world.
+        A neural Q-network agent learning to navigate a randomized grid world. Q-values are approximated by a small network (2→32→32→4) trained via gradient descent on the Bellman target — the same principle behind DQN, kept intentionally minimal. Hit <b>Train</b> and watch it converge.
       </p>
 
       <div id="rl-lab" class="rl-lab"></div>
