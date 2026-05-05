@@ -6,6 +6,23 @@
   // Project entries — placeholders the user will fill later.
   const PROJECTS = [
     {
+      title: 'MathWorks Minidrone Competition',
+      year: '2024',
+      tags: ['Control', 'MATLAB', 'Robotics'],
+      repo: 'https://github.com/RoshaRazmarafar02/MathworksMiniDroneCompetition-BigO1-2024',
+      summary: [
+        '1st place nationally in 2024, after 4th in 2023. The challenge: design a controller that autonomously flies a Parrot Mambo Minidrone along a marked track, executes turns, and lands on a designated circle — using only onboard sensors and a downward camera. No external positioning allowed.',
+        'We developed the Equilibrium Algorithmic Framework, an approach that tightly integrates image processing, yaw-based control, and a Stateflow path planner. The core insight was treating the camera frame as a matrix and applying morphological erosion and structured submatrices to extract path direction, turn cues, and circle detection signals simultaneously — rather than solving them sequentially.',
+        'Three algorithm generations were built and hardware-tested. The final version uses seven symmetric submatrices for line following, a dual-blob-analysis pipeline for circle detection, and a four-state Stateflow machine (hover → move → yaw → land) that reads directly from image processing flags. The controller was compiled via Embedded Coder and deployed directly to the drone — progressing from 16% track completion in early flights to consistent 100% across ten hardware sessions.',
+      ],
+      meta: {
+        Role: 'Co-designer · Engineer',
+        Stack: 'MATLAB · Simulink · Stateflow · Embedded Coder · Parrot SDK',
+        Domain: 'Autonomous control · computer vision · model-based design',
+        Result: '1st place · 2024 · National',
+      },
+    },
+    {
       title: 'Real-Time Air Pollution Monitoring via WSN Simulation',
       year: '2024',
       tags: ['Distributed Systems', 'Simulation', 'Networks'],
@@ -38,23 +55,6 @@
         Stack: 'C# · ASP.NET MVC 5 · Entity Framework 6 · SQL Server · MailKit',
         Domain: 'Offensive security · awareness training',
         Status: 'Research prototype',
-      },
-    },
-    {
-      title: 'MathWorks Minidrone Competition',
-      year: '2024',
-      tags: ['Control', 'MATLAB', 'Robotics'],
-      repo: 'https://github.com/RoshaRazmarafar02/MathworksMiniDroneCompetition-BigO1-2024',
-      summary: [
-        '1st place nationally in 2024, after 4th in 2023. The challenge: design a controller that autonomously flies a Parrot Mambo Minidrone along a marked track, executes turns, and lands on a designated circle — using only onboard sensors and a downward camera. No external positioning allowed.',
-        'We developed the Equilibrium Algorithmic Framework, an approach that tightly integrates image processing, yaw-based control, and a Stateflow path planner. The core insight was treating the camera frame as a matrix and applying morphological erosion and structured submatrices to extract path direction, turn cues, and circle detection signals simultaneously — rather than solving them sequentially.',
-        'Three algorithm generations were built and hardware-tested. The final version uses seven symmetric submatrices for line following, a dual-blob-analysis pipeline for circle detection, and a four-state Stateflow machine (hover → move → yaw → land) that reads directly from image processing flags. The controller was compiled via Embedded Coder and deployed directly to the drone — progressing from 16% track completion in early flights to consistent 100% across ten hardware sessions.',
-      ],
-      meta: {
-        Role: 'Co-designer · Engineer',
-        Stack: 'MATLAB · Simulink · Stateflow · Embedded Coder · Parrot SDK',
-        Domain: 'Autonomous control · computer vision · model-based design',
-        Result: '1st place · 2024 · National',
       },
     },
   ];
