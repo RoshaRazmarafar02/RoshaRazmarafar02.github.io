@@ -37,7 +37,7 @@
         </div>
         <div class="rl-stat">
           <span>epsilon</span>
-          <strong id="rl-epsilon">0.40</strong>
+          <strong id="rl-epsilon">1.00</strong>
         </div>
 
         <div class="rl-stat">
@@ -155,6 +155,7 @@
   let winRewards = [];
   let trainedAtEpisode = null;
   let stableChecks = 0;
+  let trainingId = 0;
   const REQUIRED_STABLE_CHECKS = 5;
   const MAX_TRAIN_EPISODES = 400;
   let distMap = null;  // BFS distance from every cell to mouse, respecting walls
@@ -365,35 +366,44 @@
   }
 
   function trainUntilConverged() {
-    if (running) return;
-
+    const myId = ++trainingId;
+    running = true;
     computeDistMap();
     const startEpisode = episode;
     stableChecks = 0;
     trainedAtEpisode = null;
 
-    while (episode - startEpisode < MAX_TRAIN_EPISODES) {
-      LearningStep(false);
-
-      // check only at episode boundaries (steps resets to 0 after each episode)
-      if (steps === 0 && episode > 0) {
-        if (policyReachesGoal()) {
-          stableChecks++;
-        } else {
-          stableChecks = 0;
-        }
-
-        if (stableChecks >= REQUIRED_STABLE_CHECKS) {
-          trainedAtEpisode = episode;
-          break;
-        }
-      }
+    function finish() {
+      if (trainingId !== myId) return;
+      running = false;
+      showPath = true;
+      resetCat();
+      updateState();
+      draw();
     }
 
-    showPath = true;
-    resetCat();
-    updateState();
-    draw();
+    function runBatch() {
+      if (trainingId !== myId) return;
+
+      const STEPS_PER_BATCH = 300;
+      for (let s = 0; s < STEPS_PER_BATCH; s++) {
+        if (episode - startEpisode >= MAX_TRAIN_EPISODES) { finish(); return; }
+        LearningStep(false);
+        // steps resets to 0 at each episode boundary
+        if (steps === 0 && episode > startEpisode) {
+          if (policyReachesGoal()) stableChecks++;
+          else stableChecks = 0;
+          if (stableChecks >= REQUIRED_STABLE_CHECKS) { trainedAtEpisode = episode; finish(); return; }
+        }
+      }
+
+      // yield to browser so it can repaint with updated values
+      document.getElementById("rl-epsilon").textContent = epsilon.toFixed(2);
+      document.getElementById("rl-episode").textContent = episode.toString().padStart(3, "0");
+      setTimeout(runBatch, 0);
+    }
+
+    runBatch();
   }
 
   function demoPolicy() {
