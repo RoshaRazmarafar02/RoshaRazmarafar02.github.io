@@ -7,7 +7,7 @@
       <div class="rl-panel">
         <div class="rl-topbar">
           <div>
-            <div class="rl-kicker">gridworld://cat-agent</div>
+            <div class="rl-kicker">gridworld://neural-q</div>
             <h3>Reinforcement Learning Micro-Lab: Cat vs. Mouse</h3>
           </div>
           <div class="rl-status">
@@ -22,7 +22,7 @@
             <button data-action="train-fast">Train</button>
             <button data-action="demo">Run Policy</button>
             <button data-action="step">One Step</button>
-            <button data-action="reset">Reset</button>        
+            <button data-action="reset">Reset</button>
         </div>
       </div>
 
@@ -39,7 +39,7 @@
           <span>epsilon</span>
           <strong id="rl-epsilon">0.40</strong>
         </div>
-        
+
         <div class="rl-stat">
             <span>success</span>
             <strong id="rl-success">0%</strong>
@@ -53,8 +53,8 @@
             <strong id="rl-policy">raw</strong>
         </div>
         <div class="rl-note">
-          Press <b>Train</b> to let the cat learn over multiple episodes, then <b>Run Policy</b> to see the learned behavior. The cat explores the grid, seeking the mouse while avoiding walls, and learns from rewards and penalties.
-          Press <b>One Step</b> to advance the simulation incrementally, or <b>Reset</b> to start fresh with new random positions and walls.
+          Q-values are approximated by a small neural network (2→32→32→4) instead of a lookup table — same Bellman target, learned by gradient descent.
+          Press <b>Train</b> to run 25 episodes, <b>Run Policy</b> to watch the greedy policy, <b>One Step</b> to step manually, or <b>Reset</b> to start fresh.
         </div>
       </div>
     </div>
@@ -91,12 +91,57 @@
     { name: "right", dx:  1, dy:  0 },
   ];
 
-  const q = {};
+  // ── Neural network: 2 → 32 → 32 → 4 ─────────────────────────────────────
+  const nn = (() => {
+    const lr = 0.01;
+    const [I, H, O] = [2, 32, 4];
+    const he = n => (Math.random() * 2 - 1) * Math.sqrt(2 / n);
+
+    let w1, b1, w2, b2, w3, b3;
+
+    function init() {
+      w1 = Array.from({ length: H }, () => Array.from({ length: I }, () => he(I)));
+      b1 = Array(H).fill(0);
+      w2 = Array.from({ length: H }, () => Array.from({ length: H }, () => he(H)));
+      b2 = Array(H).fill(0);
+      w3 = Array.from({ length: O }, () => Array.from({ length: H }, () => he(H)));
+      b3 = Array(O).fill(0);
+    }
+
+    function fwd(x) {
+      const h1 = b1.map((b, i) => Math.max(0, w1[i].reduce((s, w, j) => s + w * x[j], b)));
+      const h2 = b2.map((b, i) => Math.max(0, w2[i].reduce((s, w, j) => s + w * h1[j], b)));
+      const out = b3.map((b, i) => w3[i].reduce((s, w, j) => s + w * h2[j], b));
+      return { h1, h2, out };
+    }
+
+    function predict(x) { return fwd(x).out; }
+
+    function train(x, target, a) {
+      const { h1, h2, out } = fwd(x);
+      const err = out[a] - target;
+
+      // compute all gradients before touching weights
+      const dout = Array(O).fill(0); dout[a] = err;
+      const dh2 = h2.map((v, j) => (v > 0 ? w3.reduce((s, row, i) => s + dout[i] * row[j], 0) : 0));
+      const dh1 = h1.map((v, j) => (v > 0 ? w2.reduce((s, row, i) => s + dh2[i]  * row[j], 0) : 0));
+
+      w3.forEach((row, i) => { b3[i] -= lr * dout[i]; row.forEach((_, j) => { row[j] -= lr * dout[i] * h2[j]; }); });
+      w2.forEach((row, i) => { b2[i] -= lr * dh2[i];  row.forEach((_, j) => { row[j] -= lr * dh2[i]  * h1[j]; }); });
+      w1.forEach((row, i) => { b1[i] -= lr * dh1[i];  row.forEach((_, j) => { row[j] -= lr * dh1[i]  * x[j];  }); });
+    }
+
+    init();
+    return { predict, train, reset: init };
+  })();
+
+  function stateVec(x, y) { return [x / (grid - 1), y / (grid - 1)]; }
+
+  const visited = new Set();
 
   let episode  = 0;
   let steps    = 0;
   let epsilon  = 0.4;
-  const alpha  = 0.25;
   const gamma  = 0.9;
   let running  = false;
   let timer    = null;
@@ -108,42 +153,45 @@
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
-  function stateKey(pos) { return `${pos.x},${pos.y}`; }
-
-  function getQ(state) {
-    if (!q[state]) q[state] = [0, 0, 0, 0];
-    return q[state];
-  }
-
   function isWall(x, y)    { return walls.some(w => w.x === x && w.y === y); }
   function isOutside(x, y) { return x < 0 || x >= grid || y < 0 || y >= grid; }
 
   function hasPath(sx, sy, ex, ey) {
-    const visited = new Set();
+    const seen = new Set();
     const queue = [{ x: sx, y: sy }];
-    visited.add(`${sx},${sy}`);
+    seen.add(`${sx},${sy}`);
     while (queue.length) {
       const { x, y } = queue.shift();
       if (x === ex && y === ey) return true;
       for (const { dx, dy } of actions) {
         const nx = x + dx, ny = y + dy, k = `${nx},${ny}`;
-        if (!isOutside(nx, ny) && !isWall(nx, ny) && !visited.has(k)) {
-          visited.add(k); queue.push({ x: nx, y: ny });
+        if (!isOutside(nx, ny) && !isWall(nx, ny) && !seen.has(k)) {
+          seen.add(k); queue.push({ x: nx, y: ny });
         }
       }
     }
     return false;
   }
 
+  function chooseBestAction(x, y) {
+    const qVals = nn.predict(stateVec(x, y));
+    return qVals.reduce((best, v, i) => v > qVals[best] ? i : best, 0);
+  }
+
+  function chooseAction(x, y) {
+    if (Math.random() < epsilon) return Math.floor(Math.random() * actions.length);
+    return chooseBestAction(x, y);
+  }
+
   function policyReachesGoal() {
-    const visited = new Set();
+    const seen = new Set();
     let x = catStart.x, y = catStart.y;
     for (let i = 0; i < grid * grid; i++) {
       const key = `${x},${y}`;
-      if (visited.has(key)) return false;
-      visited.add(key);
+      if (seen.has(key)) return false;
+      seen.add(key);
       if (x === mouse.x && y === mouse.y) return true;
-      const { dx, dy } = actions[chooseBestAction(key)];
+      const { dx, dy } = actions[chooseBestAction(x, y)];
       const nx = x + dx, ny = y + dy;
       if (isOutside(nx, ny) || isWall(nx, ny)) return false;
       x = nx; y = ny;
@@ -179,7 +227,6 @@
       mouse.x = mx; mouse.y = my;
       if (hasPath(cx, cy, mx, my)) return;
     }
-    // fallback
     cat.x = catStart.x = 1; cat.y = catStart.y = 6;
     mouse.x = 6; mouse.y = 1;
   }
@@ -187,20 +234,17 @@
   function randomizeWalls() {
     walls.length = 0;
     const safe = safeCells();
-    const numGroups = 2 + Math.floor(Math.random() * 2); // 2–3 groups
+    const numGroups = 2 + Math.floor(Math.random() * 2);
 
     for (let g = 0; g < numGroups; g++) {
       for (let attempt = 0; attempt < 150; attempt++) {
-        // Bias seed toward the midpoint between cat and mouse (t in 0.25–0.75)
-        // with a random offset of ±1–2 cells so groups don't all stack exactly
-        const t   = 0.25 + Math.random() * 0.5;
-        const jx  = Math.round((Math.random() - 0.5) * 3);
-        const jy  = Math.round((Math.random() - 0.5) * 3);
-        const sx  = Math.min(grid - 1, Math.max(0, Math.round(cat.x + t * (mouse.x - cat.x)) + jx));
-        const sy  = Math.min(grid - 1, Math.max(0, Math.round(cat.y + t * (mouse.y - cat.y)) + jy));
+        const t  = 0.25 + Math.random() * 0.5;
+        const jx = Math.round((Math.random() - 0.5) * 3);
+        const jy = Math.round((Math.random() - 0.5) * 3);
+        const sx = Math.min(grid - 1, Math.max(0, Math.round(cat.x + t * (mouse.x - cat.x)) + jx));
+        const sy = Math.min(grid - 1, Math.max(0, Math.round(cat.y + t * (mouse.y - cat.y)) + jy));
         if (safe.has(`${sx},${sy}`) || isWall(sx, sy)) continue;
 
-        // Grow a connected group of 2–4 cells
         const group = [{ x: sx, y: sy }];
         const size = 2 + Math.floor(Math.random() * 3);
         let cur = group[0];
@@ -221,32 +265,17 @@
         }
 
         if (group.length < 2) continue;
-
         for (const c of group) walls.push(c);
         if (!hasPath(cat.x, cat.y, mouse.x, mouse.y)) {
           for (let i = 0; i < group.length; i++) walls.pop();
         } else {
-          break; // group placed successfully
+          break;
         }
       }
     }
   }
 
   function resetCat() { cat.x = catStart.x; cat.y = catStart.y; steps = 0; }
-
-  function chooseAction(state) {
-    if (Math.random() < epsilon) return Math.floor(Math.random() * actions.length);
-    return chooseBestAction(state);
-  }
-
-  function chooseBestAction(state) {
-    const values = getQ(state);
-    let best = 0;
-    for (let i = 1; i < values.length; i++) {
-      if (values[i] > values[best]) best = i;
-    }
-    return best;
-  }
 
   function takeAction(actionIndex, animate = true) {
     const action = actions[actionIndex];
@@ -275,17 +304,16 @@
   // ── learning ──────────────────────────────────────────────────────────────
 
   function LearningStep(shouldDraw = true) {
-    const state       = stateKey(cat);
-    const actionIndex = chooseAction(state);
+    const cx = cat.x, cy = cat.y;
+    visited.add(`${cx},${cy}`);
+
+    const actionIndex = chooseAction(cx, cy);
     const result      = takeAction(actionIndex, shouldDraw);
-    const nextState   = stateKey(result.next);
 
-    const currentQ = getQ(state);
-    const nextQ    = getQ(nextState);
-    const oldValue = currentQ[actionIndex];
-    const bestNext = Math.max(...nextQ);
+    const nextQ  = nn.predict(stateVec(result.next.x, result.next.y));
+    const target = result.reward + (result.done ? 0 : gamma * Math.max(...nextQ));
+    nn.train(stateVec(cx, cy), target, actionIndex);
 
-    currentQ[actionIndex] = oldValue + alpha * (result.reward + gamma * bestNext - oldValue);
     episodeReward += result.reward;
     steps++;
 
@@ -308,10 +336,7 @@
   function trainFast(episodesTarget = 25) {
     if (running) return;
     const target = episode + episodesTarget;
-    while (episode < target) {
-      LearningStep(false);
-    }
-    epsilon = 0.0;
+    while (episode < target) LearningStep(false);
     showPath = true;
     resetCat();
     updateState();
@@ -321,29 +346,24 @@
   function demoPolicy() {
     if (running) return;
     running = true;
+    const savedEpsilon = epsilon;
     epsilon = 0.0;
     resetCat();
     updateState();
     draw();
 
     timer = setInterval(() => {
-      const state       = stateKey(cat);
-      const actionIndex = chooseBestAction(state);
+      const actionIndex = chooseBestAction(cat.x, cat.y);
       const result      = takeAction(actionIndex);
       steps++;
 
-      if (result.done) {
+      if (result.done || steps > 30) {
         updateState();
         draw();
         clearInterval(timer);
         running = false;
+        epsilon = savedEpsilon;
         return;
-      }
-
-      // Bail if stuck (shouldn't happen with a trained policy, but safety net)
-      if (steps > 30) {
-        clearInterval(timer);
-        running = false;
       }
 
       updateState();
@@ -359,22 +379,20 @@
       ? winRewards.reduce((a, b) => a + b, 0) / winRewards.length
       : 0;
 
-    document.getElementById("rl-episode").textContent     = episode.toString().padStart(3, "0");
-    document.getElementById("rl-steps").textContent       = steps.toString().padStart(2, "0");
-    document.getElementById("rl-epsilon").textContent     = epsilon.toFixed(2);
-    document.getElementById("rl-success").textContent     = `${successRate.toFixed(0)}%`;
-    document.getElementById("rl-avg-reward").textContent  = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
-    document.getElementById("rl-policy").textContent      = policyReachesGoal() ? "learned" : "exploring";
+    document.getElementById("rl-episode").textContent    = episode.toString().padStart(3, "0");
+    document.getElementById("rl-steps").textContent      = steps.toString().padStart(2, "0");
+    document.getElementById("rl-epsilon").textContent    = epsilon.toFixed(2);
+    document.getElementById("rl-success").textContent    = `${successRate.toFixed(0)}%`;
+    document.getElementById("rl-avg-reward").textContent = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
+    document.getElementById("rl-policy").textContent     = (episode > 0 && policyReachesGoal()) ? "learned" : "exploring";
   }
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Background
     ctx.fillStyle = "rgba(16,16,19,0.72)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Grid lines
     for (let y = 0; y < grid; y++) {
       for (let x = 0; x < grid; x++) {
         ctx.strokeStyle = "rgba(234,231,225,0.08)";
@@ -383,24 +401,21 @@
       }
     }
 
-    // Q-value glow — cells the agent has learned value for
+    // Q-value glow — visited cells where the network has learned positive value
     ctx.fillStyle = "rgba(25,229,223,0.06)";
-    for (let key in q) {
+    for (const key of visited) {
       const [x, y] = key.split(',').map(Number);
-      const maxVal = Math.max(...q[key]);
-      if (maxVal > 0) ctx.fillRect(x * cell, y * cell, cell, cell);
+      if (Math.max(...nn.predict(stateVec(x, y))) > 0)
+        ctx.fillRect(x * cell, y * cell, cell, cell);
     }
 
-    // Path hint — greedy policy trace from cat start to mouse
     drawPathHint();
 
-    // Walls
     walls.forEach(w => {
       ctx.fillStyle = "rgba(234,231,225,0.14)";
       ctx.fillRect(w.x * cell + 8, w.y * cell + 8, cell - 16, cell - 16);
     });
 
-    // Win flash on mouse cell
     if (winFlash > 0) {
       ctx.fillStyle = "rgba(25,229,223,0.22)";
       ctx.fillRect(mouse.x * cell, mouse.y * cell, cell, cell);
@@ -426,7 +441,6 @@
     const dx = cx - size / 2;
     const dy = cy - size / 2;
 
-    // Square clip mask — cover-fit (crop sides/top to fill the square)
     const iw = img.naturalWidth  || size;
     const ih = img.naturalHeight || size;
     const scale = Math.max(size / iw, size / ih);
@@ -444,27 +458,25 @@
   }
 
   function drawPathHint() {
-    if (!showPath || Object.keys(q).length === 0) return;
+    if (!showPath || visited.size === 0) return;
 
-    const visited = new Set();
+    const seen = new Set();
     let x = catStart.x, y = catStart.y;
     const path = [];
 
     for (let i = 0; i < grid * grid; i++) {
       const key = `${x},${y}`;
-      if (visited.has(key)) break;
-      visited.add(key);
+      if (seen.has(key)) break;
+      seen.add(key);
       if (x === mouse.x && y === mouse.y) break;
 
-      const best = chooseBestAction(key);
+      const best = chooseBestAction(x, y);
       const { dx, dy } = actions[best];
-      const nx = x + dx;
-      const ny = y + dy;
+      const nx = x + dx, ny = y + dy;
       if (isOutside(nx, ny) || isWall(nx, ny)) break;
 
       path.push({ x, y, dx, dy });
-      x = nx;
-      y = ny;
+      x = nx; y = ny;
     }
 
     ctx.save();
@@ -499,14 +511,13 @@
     ctx.restore();
   }
 
-  // ── win animation ────────────────────────────────────────────────────────
+  // ── win animation ─────────────────────────────────────────────────────────
 
   const RUN_FRAMES   = ['1','2','3','4'].map(n => `assets/cat/${n}.png`);
   const CELEB_FRAMES = ['5_1','5_2','5_3','5_2','5_1'].map(n => `assets/cat/${n}.png`);
   [...RUN_FRAMES, ...['assets/cat/5_1.png','assets/cat/5_2.png','assets/cat/5_3.png']]
     .forEach(src => { const i = new Image(); i.src = src; });
 
-  // Body-level overlay — escapes backdrop-filter containing blocks
   const winOverlay = document.createElement('div');
   winOverlay.id = 'win-overlay';
   winOverlay.setAttribute('aria-hidden', 'true');
@@ -517,20 +528,15 @@
   document.body.appendChild(winOverlay);
 
   function playWinAnimation() {
-    const CAT_W        = 945;
-    const RUN_SPEED    = 800;   // px/s
-    const RUN_MS       = 75;    // ms per run frame
-    const CELEB_MS     = 110;   // ms per celebration frame
-    const midX         = window.innerWidth / 2 - CAT_W / 2;
-    const exitX        = window.innerWidth + 20;
+    const CAT_W     = 945;
+    const RUN_SPEED = 800;
+    const RUN_MS    = 75;
+    const CELEB_MS  = 110;
+    const midX      = window.innerWidth / 2 - CAT_W / 2;
+    const exitX     = window.innerWidth + 20;
 
-    let phase      = 'run-in';
-    let runFrame   = 0;
-    let celebFrame = 0;
-    let x          = -CAT_W;
-    let lastTs     = null;
-    let lastRunT   = 0;
-    let lastCelebT = 0;
+    let phase = 'run-in', runFrame = 0, celebFrame = 0, x = -CAT_W;
+    let lastTs = null, lastRunT = 0, lastCelebT = 0;
 
     winCatImg.src = RUN_FRAMES[0];
     winOverlay.style.display = 'block';
@@ -542,42 +548,18 @@
 
       if (phase === 'run-in') {
         x += RUN_SPEED * dt / 1000;
-        if (ts - lastRunT > RUN_MS) {
-          runFrame = (runFrame + 1) % RUN_FRAMES.length;
-          winCatImg.src = RUN_FRAMES[runFrame];
-          lastRunT = ts;
-        }
-        if (x >= midX) {
-          x = midX;
-          phase = 'celebrate';
-          celebFrame = 0;
-          winCatImg.src = CELEB_FRAMES[0];
-          lastCelebT = ts;
-        }
+        if (ts - lastRunT > RUN_MS) { runFrame = (runFrame + 1) % RUN_FRAMES.length; winCatImg.src = RUN_FRAMES[runFrame]; lastRunT = ts; }
+        if (x >= midX) { x = midX; phase = 'celebrate'; celebFrame = 0; winCatImg.src = CELEB_FRAMES[0]; lastCelebT = ts; }
       } else if (phase === 'celebrate') {
         if (ts - lastCelebT > CELEB_MS) {
           celebFrame++;
-          if (celebFrame >= CELEB_FRAMES.length) {
-            phase = 'run-out';
-            runFrame = 0;
-            winCatImg.src = RUN_FRAMES[0];
-            lastRunT = ts;
-          } else {
-            winCatImg.src = CELEB_FRAMES[celebFrame];
-            lastCelebT = ts;
-          }
+          if (celebFrame >= CELEB_FRAMES.length) { phase = 'run-out'; runFrame = 0; winCatImg.src = RUN_FRAMES[0]; lastRunT = ts; }
+          else { winCatImg.src = CELEB_FRAMES[celebFrame]; lastCelebT = ts; }
         }
       } else {
         x += RUN_SPEED * dt / 1000;
-        if (ts - lastRunT > RUN_MS) {
-          runFrame = (runFrame + 1) % RUN_FRAMES.length;
-          winCatImg.src = RUN_FRAMES[runFrame];
-          lastRunT = ts;
-        }
-        if (x > exitX) {
-          winOverlay.style.display = 'none';
-          return;
-        }
+        if (ts - lastRunT > RUN_MS) { runFrame = (runFrame + 1) % RUN_FRAMES.length; winCatImg.src = RUN_FRAMES[runFrame]; lastRunT = ts; }
+        if (x > exitX) { winOverlay.style.display = 'none'; return; }
       }
 
       winCatImg.style.left = x + 'px';
@@ -603,7 +585,8 @@
   mount.querySelector('[data-action="reset"]').addEventListener("click", () => {
     clearInterval(timer);
     running       = false;
-    for (const key in q) delete q[key];
+    nn.reset();
+    visited.clear();
     walls.length  = 0;
     randomizeCatMouse();
     randomizeWalls();
