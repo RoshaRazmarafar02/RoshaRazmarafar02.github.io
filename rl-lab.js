@@ -591,7 +591,10 @@
   winOverlay.appendChild(winCatImg);
   document.body.appendChild(winOverlay);
 
+  let winAnimId = 0;
+
   function playWinAnimation() {
+    const myAnimId = ++winAnimId;
     const CAT_W     = 945;
     const RUN_SPEED = 800;
     const RUN_MS    = 75;
@@ -606,6 +609,7 @@
     winOverlay.style.display = 'block';
 
     function step(ts) {
+      if (winAnimId !== myAnimId) { winOverlay.style.display = 'none'; return; }
       if (!lastTs) { lastTs = ts; lastRunT = ts; lastCelebT = ts; }
       const dt = ts - lastTs;
       lastTs = ts;
