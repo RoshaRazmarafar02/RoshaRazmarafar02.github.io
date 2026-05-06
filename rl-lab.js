@@ -603,7 +603,8 @@
     const exitX     = window.innerWidth + 20;
 
     let phase = 'run-in', runFrame = 0, celebFrame = 0, x = -CAT_W;
-    let lastTs = null, lastRunT = 0, lastCelebT = 0;
+    let lastTs = null, lastRunT = 0, lastCelebT = 0, celebStart = 0;
+    const CELEB_DURATION = 2400;
 
     winCatImg.src = RUN_FRAMES[0];
     winOverlay.style.display = 'block';
@@ -617,13 +618,14 @@
       if (phase === 'run-in') {
         x += RUN_SPEED * dt / 1000;
         if (ts - lastRunT > RUN_MS) { runFrame = (runFrame + 1) % RUN_FRAMES.length; winCatImg.src = RUN_FRAMES[runFrame]; lastRunT = ts; }
-        if (x >= midX) { x = midX; phase = 'celebrate'; celebFrame = 0; winCatImg.src = CELEB_FRAMES[0]; lastCelebT = ts; }
+        if (x >= midX) { x = midX; phase = 'celebrate'; celebFrame = 0; celebStart = ts; winCatImg.src = CELEB_FRAMES[0]; lastCelebT = ts; }
       } else if (phase === 'celebrate') {
         if (ts - lastCelebT > CELEB_MS) {
-          celebFrame++;
-          if (celebFrame >= CELEB_FRAMES.length) { phase = 'run-out'; runFrame = 0; winCatImg.src = RUN_FRAMES[0]; lastRunT = ts; }
-          else { winCatImg.src = CELEB_FRAMES[celebFrame]; lastCelebT = ts; }
+          celebFrame = (celebFrame + 1) % CELEB_FRAMES.length;
+          winCatImg.src = CELEB_FRAMES[celebFrame];
+          lastCelebT = ts;
         }
+        if (ts - celebStart >= CELEB_DURATION) { phase = 'run-out'; runFrame = 0; winCatImg.src = RUN_FRAMES[0]; lastRunT = ts; }
       } else {
         x += RUN_SPEED * dt / 1000;
         if (ts - lastRunT > RUN_MS) { runFrame = (runFrame + 1) % RUN_FRAMES.length; winCatImg.src = RUN_FRAMES[runFrame]; lastRunT = ts; }
