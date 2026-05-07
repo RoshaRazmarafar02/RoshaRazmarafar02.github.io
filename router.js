@@ -8,7 +8,7 @@
     {
       title: 'MathWorks Minidrone Competition',
       year: '2024',
-      tags: ['Control', 'MATLAB', 'Robotics'],
+      tags: ['Control', 'MATLAB', 'Computer Vision', 'Robotics'],
       repo: 'https://github.com/RoshaRazmarafar02/MathworksMiniDroneCompetition-BigO1-2024',
       summary: [
         '1st place nationally in 2024, after 4th in 2023. The challenge: design a controller that autonomously flies a Parrot Mambo Minidrone along a marked track, executes turns, and lands on a designated circle — using only onboard sensors and a downward camera. No external positioning allowed.',
